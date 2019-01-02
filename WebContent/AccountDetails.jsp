@@ -17,10 +17,16 @@
 		</tr>
 		<jstl:if test="${requestScope.account!=null}">
 			<tr>
-				<td>${requestScope.account.bankAccount.accountNumber}</td>
-				<td>${requestScope.account.bankAccount.accountHolderName }</td>
+				<td>${requestScope.account.bankAccount.accountNumber}></td>
+				<td><input type="text" value ="${requestScope.account.bankAccount.accountHolderName}"></td>
 				<td>${requestScope.account.bankAccount.accountBalance}</td>
-				<td>${requestScope.account.salary==true?"Yes":"No"}</td>
+				<td>
+					<select>
+						${requestScope.account.salary==true?"Yes":"No"}
+						<option>Yes</option>
+						<option>No</option>
+					</select>
+				</td>
 				<td>${"N/A"}</td>
 				<td>${"Savings"}</td>
 			</tr>

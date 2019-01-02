@@ -38,7 +38,7 @@ public class AccountController extends HttpServlet {
 	private CurrentAccountService currentAccountService = new CurrentAccountServiceImpl();
 	
 	private RequestDispatcher dispatcher;
-	
+//To ask	
 	private boolean toSortIn= false;
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -199,7 +199,7 @@ public class AccountController extends HttpServlet {
 		{
 		try {
 			ArrayList<SavingsAccount> accounts = (ArrayList<SavingsAccount>) savingsAccountService.getAllSavingsAccount();
-			
+			toSortIn = !toSortIn;
 			int sort = toSortIn == false? 1 : -1;
 			Collections.sort(accounts,new Comparator<SavingsAccount>(){
 				@Override
@@ -208,7 +208,8 @@ public class AccountController extends HttpServlet {
 							(accountTwo.getBankAccount().getAccountHolderName()));
 				}
 			});
-			toSortIn = true;
+		//	toSortIn = true;
+			System.out.println(toSortIn);
 			request.setAttribute("accounts", accounts);
 			dispatcher = request.getRequestDispatcher("AccountDetails.jsp");
 			dispatcher.forward(request, response);
@@ -218,6 +219,29 @@ public class AccountController extends HttpServlet {
 			e.printStackTrace();
 		}
 			
+		}
+		
+		else if(path.equals("/updateRequest.mm"))
+			response.sendRedirect("getAccountForm.jsp");
+		
+		else if(path.equals("/getAccount.mm"))
+		{
+			int accountNumber = Integer.parseInt(request.getParameter("accountNumber"));
+			 try {
+				 try {
+					SavingsAccount account = savingsAccountService.getAccountById(accountNumber);
+					request.setAttribute("account", account);
+					dispatcher = request.getRequestDispatcher("AccountDetails.jsp");
+					dispatcher.forward(request, response);
+				} catch (AccountNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} catch (ClassNotFoundException | SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			//List<SavingsAccount> accounts = savingsAccountService.getAccountById(a)();
 		}
 		System.out.println(path);
 		
