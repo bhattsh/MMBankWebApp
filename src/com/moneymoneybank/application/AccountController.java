@@ -2,7 +2,15 @@ package com.moneymoneybank.application;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -28,6 +36,10 @@ public class AccountController extends HttpServlet {
 	private  SavingsAccountService savingsAccountService=new SavingsAccountServiceImpl();
 
 	private CurrentAccountService currentAccountService = new CurrentAccountServiceImpl();
+	
+	private RequestDispatcher dispatcher;
+	
+	private boolean toSortIn= false;
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
@@ -168,8 +180,47 @@ public class AccountController extends HttpServlet {
 		}
 		else if(path.equals("/moneyTransferRequest.mm"))
 			response.sendRedirect("moneyTransferForm.html");
+		
+		else if(path.equals("/getAll.mm"))
+		{
+		try {
+			List<SavingsAccount> accounts = savingsAccountService.getAllSavingsAccount();
+			request.setAttribute("accounts", accounts);
+			dispatcher = request.getRequestDispatcher("AccountDetails.jsp");
+			dispatcher.forward(request, response);
+		} catch (ClassNotFoundException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		}
+
+		//TO do 
+		else if(path.equals("/sortByName.mm"))
+		{
+		try {
+			ArrayList<SavingsAccount> accounts = (ArrayList<SavingsAccount>) savingsAccountService.getAllSavingsAccount();
+			
+			int sort = toSortIn == false? 1 : -1;
+			Collections.sort(accounts,new Comparator<SavingsAccount>(){
+				@Override
+				public int compare(SavingsAccount accountOne, SavingsAccount accountTwo) {
+					return sort * (accountOne.getBankAccount().getAccountHolderName().compareToIgnoreCase
+							(accountTwo.getBankAccount().getAccountHolderName()));
+				}
+			});
+			toSortIn = true;
+			request.setAttribute("accounts", accounts);
+			dispatcher = request.getRequestDispatcher("AccountDetails.jsp");
+			dispatcher.forward(request, response);
+		}
+			catch (ClassNotFoundException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+			
+		}
 		System.out.println(path);
 		
-	}
 
+	}
 }
